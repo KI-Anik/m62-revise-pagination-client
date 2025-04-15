@@ -9,6 +9,7 @@ const Shop = () => {
     const [products, setProducts] = useState([]);
     const [cart, setCart] = useState([])
     const { count } = useLoaderData()
+    const [currentPage, setCurrentPage] = useState(0)
     const [itemsPerPage, setItemsPerPage] = useState(10)
     const numberOfPages = Math.ceil(count / itemsPerPage)
 
@@ -77,43 +78,62 @@ const Shop = () => {
     const handleItemsPerPage = e => {
         const val = parseInt(e.target.value)
         setItemsPerPage(val)
-
+        setCurrentPage(0)
     }
-        
-        return (
-            <div className='shop-container'>
-                <div className="products-container">
-                    {
-                        products.map(product => <Product
-                            key={product._id}
-                            product={product}
-                            handleAddToCart={handleAddToCart}
-                        ></Product>)
-                    }
-                </div>
-                <div className="cart-container">
-                    <Cart
-                        cart={cart}
-                        handleClearCart={handleClearCart}
-                    >
-                        <Link className='proceed-link' to="/orders">
-                            <button className='btn-proceed'>Review Order</button>
-                        </Link>
-                    </Cart>
-                </div>
-                <div className='pagination'>
-                    {
-                        pages.map(page => <button key={page}>{page}</button>)
-                    }
-                    <select value={itemsPerPage} onChange={handleItemsPerPage} name="" id="">
-                        <option value="5">5</option>
-                        <option value="10">10</option>
-                        <option value="20">20</option>
-                        <option value="50">50</option>
-                    </select>
-                </div>
-            </div>
-        );
-    };
 
-    export default Shop;
+    const handlePrev = () => {
+        if (currentPage > 0) {
+            setCurrentPage(currentPage - 1)
+        }
+    }
+
+    const handleNext = () => {
+        if (currentPage < pages.length - 1) {
+            setCurrentPage(currentPage + 1)
+        }
+    }
+
+    return (
+        <div className='shop-container'>
+            <div className="products-container">
+                {
+                    products.map(product => <Product
+                        key={product._id}
+                        product={product}
+                        handleAddToCart={handleAddToCart}
+                    ></Product>)
+                }
+            </div>
+            <div className="cart-container">
+                <Cart
+                    cart={cart}
+                    handleClearCart={handleClearCart}
+                >
+                    <Link className='proceed-link' to="/orders">
+                        <button className='btn-proceed'>Review Order</button>
+                    </Link>
+                </Cart>
+            </div>
+            <div className='pagination'>
+                <p>current Page: {currentPage}</p>
+                <button onClick={handlePrev}>Prev</button>
+                {
+                    pages.map(page => <button
+                        className={currentPage === page && 'selected'}
+                        onClick={() => setCurrentPage(page)}
+                        key={page}>{page}</button>)
+                }
+                <button onClick={handleNext}>Next</button>
+
+                <select value={itemsPerPage} onChange={handleItemsPerPage} name="" id="">
+                    <option value="5">5</option>
+                    <option value="10">10</option>
+                    <option value="20">20</option>
+                    <option value="50">50</option>
+                </select>
+            </div>
+        </div>
+    );
+};
+
+export default Shop;
